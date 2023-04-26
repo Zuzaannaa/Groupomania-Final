@@ -18,7 +18,7 @@ const authJwt = (req, res, next) => {
   console.log("TOKEN:", token);
 
   if (!token) {
-    return res.status(401).json({ message: "token non présent ou faux" });
+    return res.status(401).json({ message: "token not detected" });
   }
 
   jwt.verify(token, "RANDOM_TOKEN_SECRET", (err, decodedToken) => {
