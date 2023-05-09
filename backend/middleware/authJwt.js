@@ -25,7 +25,7 @@ const authJwt = (req, res, next) => {
     console.log("ERR TOKEN:", err);
     console.log("DECODED TOKEN:", decodedToken);
     if (err) {
-      return res.status(401).json({ message: "token faux" });
+      return res.status(401).json({ message: "failed" });
     }
     next();
   });

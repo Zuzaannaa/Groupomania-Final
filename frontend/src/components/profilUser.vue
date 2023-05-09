@@ -5,7 +5,6 @@
     </div>
 
     <section class="vh-100" style="background-color: #f4f5f7">
-      <!-- <div class="container py-5 h-100">  -->
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col col-lg-8 mb-4 mb-lg-0">
           <div class="card mb-3" style="border-radius: 0.5rem">
@@ -18,7 +17,6 @@
                   background-color: #0d0764;
                 "
               >
-                <!--formulaire -->
                 <form
                   id="form"
                   enctype="multipart/form-data"
@@ -81,8 +79,6 @@
                   </div>
 
                   <div>
-                    <!-- <div class ="btn" v-show ="user.isAdmin === true">  -->
-                    <!-- si user = admin => affichage bouton supprime -->
                     <button
                       v-if="(userId = user.id || user.isAdmin == true)"
                       class="form-control btn btn-danger"
@@ -106,14 +102,8 @@
 export default {
   name: "profilUser",
 
-  // props:{
-  //   value : File
-  // },
-
   data() {
     return {
-      //  src: null,
-      //  file:null,
       user: {
         id: localStorage.getItem("userId"),
         firstName: " ",
@@ -154,7 +144,6 @@ export default {
   },
 
   methods: {
-
     async getOneUser() {
       let url = `http://localhost:3000/api/user/${this.user.id}`;
       console.log(this.user.id);
@@ -196,9 +185,9 @@ export default {
           })
           .then(this.$router.push("/login"));
       } else
-        alert("Account will not be deleted")
-
-          .catch((error) => console.log(error));
+        alert("Account will not be deleted").catch((error) =>
+          console.log(error)
+        );
     },
   },
 };

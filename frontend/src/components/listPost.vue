@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid gedf-wrapper">
-    <!-- On récupére les posts : boucle avec vfor  : tableau de post-->
     <div
       class="bloclist"
       v-bind:key="post.id"
@@ -47,11 +46,7 @@
               {{ post.content }}
             </p>
             <div v-if="post.imageUrl != null">
-              <img
-                class="imagePost"
-                v-bind:src="post.imageUrl"
-                alt="image du post"
-              />
+              <img class="imagePost" v-bind:src="post.imageUrl" alt="image" />
             </div>
 
             <!-- bouton effacer si l'utilisateur a écrit le post ou est admin-->
@@ -66,7 +61,7 @@
               >
                 Delete Post
               </button>
-              <!-- bouton voir pour ajouter un commentaire-->
+
               <button
                 class="btn btn-danger"
                 @click="showCreateComment = !showCreateComment"
@@ -74,7 +69,15 @@
                 Add comment
               </button>
 
-              <!-- bouton voir tous les commentaires-->
+              <button
+                class="btn btn-danger"
+                id="readButton"
+                @click="readPost(index)"
+                v-on:click="message = 'Post has been read'"
+              >
+                Mark as read
+              </button>
+
               <div v-if="post.Comments != 0">
                 <button
                   class="btn btn-danger"
@@ -86,12 +89,10 @@
             </div>
           </div>
 
-          <!--affichage composant écrire un commentaire-->
           <div v-if="showCreateComment">
             <addComment :idPostParent="post.id"></addComment>
           </div>
 
-          <!-- affichage la liste des  commentaires-->
           <div v-if="post.Comments == 0">
             <p>No comments yet</p>
           </div>
@@ -258,9 +259,7 @@ export default {
   async mounted() {
     this.userId = JSON.parse(localStorage.getItem("userId"));
     console.log(localStorage);
-    //this.isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
 
-    // appel à l'api pour affichage des posts
     let url = "http://localhost:3000/api/post";
     let options = {
       method: "GET",
@@ -269,7 +268,6 @@ export default {
       },
     };
     this.posts = await fetch(url, options).then((res) => {
-      // traduction en json)
       res.json().then((data) => {
         console.log(data);
         this.posts = data;
@@ -279,7 +277,6 @@ export default {
       });
     });
 
-    // appel à l'api pour affichage des commentaires
     let urlComment = "http://localhost:3000/api/comment";
     let optionsComment = {
       method: "GET",
@@ -288,21 +285,14 @@ export default {
       },
     };
     this.comments = await fetch(urlComment, optionsComment).then((res) => {
-      // traduction en json)
       res.json().then((data) => {
         console.log(data);
         this.comments = data;
-        //   const currentComm = this.comments.comments.reverse().slice;
-        //  console.log(currentComm)
       });
     });
   },
 
   methods: {
-    //  dateFormat(date){
-    //    return date.split('T')[0].split('-').reverse().join('/')
-    // },
-
     async getPosts() {
       console.log("test");
       let url = "http://localhost:3000/api/post";
@@ -331,12 +321,78 @@ export default {
       });
     },
 
-    //supprimer le message//
+    readPost(index) {
+      console.log(index);
+      let confirmReadPost = confirm("Post will be marked read");
+
+      let inputContent = {
+        read: true,
+        userId: localStorage.getItem("userId"),
+        postId: this.posts.posts[index].id,
+      };
+
+      if (confirmReadPost == true) {
+        this.text = "you read this post";
+        let url = `http://localhost:3000/api/post/${this.posts.posts[index].id}/read`;
+
+        let options = {
+          method: "POST",
+
+          body: JSON.stringify(inputContent),
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        };
+
+        fetch(url, options)
+          .then(function (res) {
+            console.log(res);
+            alert("Post marked read");
+            document.getElementById("readButton").value = "you read this post";
+            //window.location.reload();
+          })
+          .catch((error) => console.log(error));
+      }
+    },
+
+    changeToRead(index) {
+      console.log(index);
+      let confirmReadPost = confirm("Post will be marked read");
+
+      let inputContent = {
+        read: true,
+        userId: localStorage.getItem("userId"),
+        postId: this.posts.posts[index].id,
+      };
+
+      if (confirmReadPost == true) {
+        let url = `http://localhost:3000/api/post/${this.posts.posts[index].id}/allRead`;
+
+        let options = {
+          method: "GET",
+
+          body: JSON.stringify(inputContent),
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        };
+        if (this.postId == this.userId) {
+          fetch(url, options)
+            .then(function (res) {
+              console.log(res);
+              alert("Post marked read");
+              //window.location.reload();
+            })
+            .catch((error) => console.log(error));
+        }
+      }
+    },
+
     deletePost(index) {
       console.log(index);
-      let confirmDeletePost = confirm(
-        "Post will be deleted. Are you sure?"
-      );
+      let confirmDeletePost = confirm("Post will be deleted. Are you sure?");
       if (confirmDeletePost == true) {
         let url = `http://localhost:3000/api/post/${this.posts.posts[index].id}`;
         let options = {
@@ -348,14 +404,13 @@ export default {
         fetch(url, options)
           .then(function (res) {
             console.log(res);
-            alert("Suppression du post confirmé ! ");
+            alert("Post deleted succesfully!");
             window.location.reload();
           })
           .catch((error) => console.log(error));
       }
     },
 
-    // recupération des commentaires
     async getComments() {
       console.log("test");
       let url = "http://localhost:3000/api/comment";
@@ -373,7 +428,6 @@ export default {
       });
     },
 
-    //supprimer le commentaire//
     deleteComment(commentid) {
       let url = `http://localhost:3000/api/comment/${commentid}`;
       let options = {
@@ -382,10 +436,11 @@ export default {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       };
+
       fetch(url, options)
         .then(function (res) {
           console.log(res);
-          alert("Suppression du commentaire confirmé ! ");
+          alert("Post deleted succesfully");
           window.location.reload();
         })
         .catch((error) => console.log(error));

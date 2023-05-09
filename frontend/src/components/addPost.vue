@@ -26,12 +26,7 @@
           </div>
           <div class="btn-toolbar justify-content-between align-items-center">
             <div class="btn-group mx-auto">
-              <button
-                type="submit"
-                id="btn-post"
-                class="btn btn-primary"
-        
-              >
+              <button type="submit" id="btn-post" class="btn btn-primary">
                 Submit
               </button>
 
@@ -109,8 +104,6 @@ export default {
           res.json();
           console.log(res);
           if (res.ok) {
-            //this.content = {}; // Retour à 0 des inputs //
-
             alert("Post created");
             this.$router.push("/listPostPage");
           } else {

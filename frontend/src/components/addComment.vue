@@ -28,10 +28,10 @@
             <div class="mt-1 text-right">
               <button
                 type="submit"
-                title="commentaire"
+                title="comment"
                 id="btn-post"
                 class="send btn btn-primary btn-sm shadow-none"
-                aria-label="créer un commentaire"
+                aria-label="Create comment"
                 ref="comment"
                 v-bind="$attrs"
                 @click="createComment(comment.id)"
@@ -65,7 +65,6 @@ export default {
     this.userId = parseInt(localStorage.getItem("userId"));
     console.log(this.userId);
 
-    /// écrire un commentaire
     let url = "http://localhost:3000/api/comment/new";
     let options = {
       method: "POST",
@@ -87,17 +86,10 @@ export default {
   },
 
   methods: {
-    /*** Créer un nouveau commetaire ***/
     async createComment() {
       if (this.content === "") {
-        return alert("Veuillez inserer un commentaire ");
+        return alert("Please write a comment");
       }
-
-      // creation objet formData)
-      // let formData = new FormData()
-      // formData.append("content",this.content);
-      // formData.append("userId", parseInt(localStorage.getItem("userId")));
-      // formData.append("postId", this.post );
 
       let inputContent = {
         content: this.content,
@@ -110,7 +102,6 @@ export default {
       let options = {
         method: "POST",
         body: JSON.stringify(inputContent),
-        // body : formData,
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
           "Content-Type": "application/json",
@@ -122,14 +113,9 @@ export default {
           res.json();
           console.log(res);
 
-          // .then((data) => {
-          //   console.log(data)
-          //   this.comment = data
-
           if (res.ok) {
-            this.content = ""; // Retour à 0 des inputs //
-            alert(" Commentaire bien reçu");
-            //    this.$router.push("/listPostPage");
+            this.content = "";
+            alert("Comment created");
           } else {
             alert("Message cannot be published ");
           }
